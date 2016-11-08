@@ -28,6 +28,21 @@ def loadCartridgeJob = freeStyleJob(cartridgeManagementFolderName + "/Load_Cartr
 loadCartridgeJob.with{
     parameters{
         stringParam('CARTRIDGE_CLONE_URL', '', 'Cartridge URL to load')
+		stringParam('ENVIRONMENT', '', 'Environment Name')
+		stringParam('SCM_PROJECT_URL', '', 'Project URL')
+		stringParam('APP_SSH_USER', '', 'OS user')
+		stringParam('APP_SERVER', '', 'Target App Server')
+		stringParam('XXCU_TOP_DIRECTORY', '', 'Must point to the XXCU top directory')
+		stringParam('ERP_MANAGER_DB_HOST', '', 'ERP DB host')
+		stringParam('DB_READ_USER', '', 'DB Read User')
+		stringParam('DB_SERVER', '', 'Target Database Server')
+		stringParam('DB_NAME', '', 'DB Name')
+		stringParam('DB_PORT', '', 'DB Port')
+		stringParam('HOME', '', 'Var Jenkins Home')
+		stringParam('COMMON_TOP', '', 'Must point to the Common top directory')
+		stringParam('FORMS_TRACE_DIR', '', 'Point to the forms trace directory')
+		stringParam('APPL_HOME', '', 'Appl home')
+		stringParam('ERP_MANAGER_DB_PORT', '', 'ERP Manager db port')
     }
     environmentVariables {
         env('WORKSPACE_NAME',workspaceFolderName)
