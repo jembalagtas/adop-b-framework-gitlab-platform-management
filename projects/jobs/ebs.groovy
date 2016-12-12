@@ -64,7 +64,7 @@ loadCartridgeJob.with{
 
     environmentVariables {
         env('WORKSPACE_NAME',workspaceFolderName)
-        env('PROJECT_NAME',projectFoldeJrName)
+        env('PROJECT_NAME',projectFolderName)
     }
     wrappers {
         preBuildCleanup()
