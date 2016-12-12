@@ -57,14 +57,14 @@ loadCartridgeJob.with{
         stringParam('DB_PORT', '1521', 'The target Oracle Database server port.')
         booleanParam('IMPORT_REFERENCE_PROJECT', false, 'Uncheck this if you already have imported a reference project.')
         stringParam('PROJECT_CLONE_SVN_URL', 'https://10.9.238.88:18080/svn/R12EBS/branches/DEVELOPMENT', 'The default value is from the Accenture Engineered Systems Lab and is accessible from vpn.accenture.com. The downloaded codes will be committed to the Private Svn repository.')
-        stringParam('PROJECT_CLONE_SVN_USER' 'admin', '')
+        stringParam('PROJECT_CLONE_SVN_USER', 'admin', '')
     }
     configure passwordParam('SCM_PASSWORD', 'Your private SVN server administrator password.', 'admin')
     configure passwordParam('PROJECT_CLONE_SVN_PASSWORD', '', '')
 
     environmentVariables {
         env('WORKSPACE_NAME',workspaceFolderName)
-        env('PROECT_NAME',projectFoldeJrName)
+        env('PROJECT_NAME',projectFoldeJrName)
     }
     wrappers {
         preBuildCleanup()
