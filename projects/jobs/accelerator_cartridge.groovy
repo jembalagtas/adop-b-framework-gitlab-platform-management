@@ -3,6 +3,17 @@ def gerritBaseUrl = "ssh://jenkins@gerrit:29418"
 def cartridgeBaseUrl = gerritBaseUrl + "/cartridges"
 def platformToolsGitUrl = gerritBaseUrl + "/platform-management"
 
+//Configure
+Closure passwordParam(String paramName, String paramDescription, String paramDefaultValue) {
+    return { project ->
+        project / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'hudson.model.PasswordParameterDefinition' {
+            'name'(paramName)
+            'description'(paramDescription)
+            'defaultValue'(paramDefaultValue)
+        }
+    }
+}
+
 // Folders
 def workspaceFolderName = "${WORKSPACE_NAME}"
 
@@ -22,16 +33,38 @@ def cartridgeManagementFolder = folder(cartridgeManagementFolderName) { displayN
 
 
 // Jobs
-def loadCartridgeJob = freeStyleJob(cartridgeManagementFolderName + "/Load_Cartridge")
+def loadCartridgeJob = freeStyleJob(cartridgeManagementFolderName + "/Load_EBS_Accelerator_Cartridge")
 
 // Setup Load_Cartridge
 loadCartridgeJob.with{
     parameters{
-        stringParam('CARTRIDGE_CLONE_URL', '', 'Cartridge URL to load')
+        stringParam('CARTRIDGE_CLONE_URL', 'ssh://git@newsource.accenture.com/adopebs/adop-b-framework-oracle-ebs-cartridge-211.git', 'The ADOP cartridge url that contains the groovy scripts to create the jenkins jobs. Add jenkins ssh key to your innersource account to clone this.')
+        stringParam('ENVIRONMENT', '','Your environment name. It is important that this name is also aligned with your SVN branch.')
+        stringParam('SCM_PROJECT_URL', 'http://svn-server/svn/R12EBS', 'By default, this http://svn-server/svn resolves to the dockerized Collabnet svn server. If you have an external SVN server change this url accordingly.')
+        stringParam('SCM_USER', 'admin', 'Your private SVN server administrator')
+        stringParam('APP_SSH_USER', 'applmgr', 'The unix user that has access to your application server.')
+        stringParam('APP_SERVER', '', 'The resolvable hostname or IP address of your application server.')
+        stringParam('APPL_HOME', '', '  Oracle EBS application specific value. Consult with your Apps DBAs.')
+        stringParam('XXCU_TOP_DIRECTORY', '', 'Oracle EBS application specific value. Consult with your Apps DBAs.')
+        stringParam('COMMON_TOP', '', 'Oracle EBS application specific value. Consult with your Apps DBAs.')
+        stringParam('FORMS_TRACE_DIR', '', 'Oracle EBS application specific value. Consult with your Apps DBAs.')
+        stringParam('ERP_MANAGER_DB_HOST', 'ricewmanager.local', 'By default, ricewmanager.local resolves to the ERP postgres container.')
+        stringParam('ERP_MANAGER_DB_PORT', '5432', 'Do not change if you are not using an external ERP manager database.')
+        stringParam('ERP_MANAGER_DB_PASSWORD', 'welcome1', 'By default, welcome1 is the database password for acn_erp_manager.')
+        stringParam('DB_READ_USER', 'readall', 'The database user from the target Oracle Database environment that has a read access.')
+        stringParam('DB_SERVER', '', 'The resolvable hostname or IP address of your Oracle Database server.')
+        stringParam('DB_NAME', '', 'Your Oracle Database SID.')
+        stringParam('DB_PORT', '1521', 'The target Oracle Database server port.')
+        booleanParam('IMPORT_REFERENCE_PROJECT', false, 'Uncheck this if you already have imported a reference project.')
+        stringParam('PROJECT_CLONE_SVN_URL', 'https://10.9.238.88:18080/svn/R12EBS/branches/DEVELOPMENT', 'The default value is from the Accenture Engineered Systems Lab and is accessible from vpn.accenture.com. The downloaded codes will be committed to the Private Svn repository.')
+        stringParam('PROJECT_CLONE_SVN_USER' 'admin', '')
     }
+    configure passwordParam('SCM_PASSWORD', 'Your private SVN server administrator password.', 'admin')
+    configure passwordParam('PROJECT_CLONE_SVN_PASSWORD', '', '')
+
     environmentVariables {
         env('WORKSPACE_NAME',workspaceFolderName)
-        env('PROJECT_NAME',projectFolderName)
+        env('PROECT_NAME',projectFoldeJrName)
     }
     wrappers {
         preBuildCleanup()
@@ -45,6 +78,18 @@ loadCartridgeJob.with{
 			'variable'('GITLAB_TOKEN')
 		}
 	}
+    steps {
+        shell('''#!/bin/bash
+if [ $IMPORT_REFERENCE_PROJECT == true ]; then
+  svn co ${PROJECT_CLONE_SVN_URL} R12EBS --username=${PROJECT_CLONE_SVN_USER} --password=${PROJECT_CLONE_SVN_PASSWORD} --non-interactive --no-auth-cache --trust-server-cert
+
+  svn import -m "New import" R12EBS ${SCM_PROJECT_URL} --username=admin --password=admin --non-interactive --no-auth-cache --trust-server-cert           
+else
+ echo "No projects were imported.."
+fi
+  
+        ''')
+    }
     steps {
         shell('''#!/bin/bash -ex
 chmod +x ${WORKSPACE}/common/gitlab/create_project.sh
@@ -131,7 +176,7 @@ fileList.each {
 }
 ''')
         dsl {
-            external("cartridge/jenkins/jobs/dsl/**/*.groovy")
+            external("cartridge/jenkins/jobs/dsl-ricew/**/*.groovy")
         }
 
     }
