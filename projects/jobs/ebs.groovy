@@ -40,8 +40,6 @@ loadCartridgeJob.with{
     parameters{
         stringParam('CARTRIDGE_CLONE_URL', 'ssh://git@newsource.accenture.com/adopebs/adop-b-framework-oracle-ebs-cartridge-211.git', 'The ADOP cartridge url that contains the groovy scripts to create the jenkins jobs. Add jenkins ssh key to your innersource account to clone this.')
         stringParam('ENVIRONMENT', '','Your environment name. It is important that this name is also aligned with your SVN branch.')
-        stringParam('SCM_PROJECT_URL', 'http://svn-server/svn/R12EBS', 'By default, this http://svn-server/svn resolves to the dockerized Collabnet svn server. If you have an external SVN server change this url accordingly.')
-        stringParam('SCM_USER', 'admin', 'Your private SVN server administrator')
         stringParam('APP_SSH_USER', 'applmgr', 'The unix user that has access to your application server.')
         stringParam('APP_SERVER', '', 'The resolvable hostname or IP address of your application server.')
         stringParam('APPL_HOME', '', '  Oracle EBS application specific value. Consult with your Apps DBAs.')
@@ -55,12 +53,7 @@ loadCartridgeJob.with{
         stringParam('DB_SERVER', '', 'The resolvable hostname or IP address of your Oracle Database server.')
         stringParam('DB_NAME', '', 'Your Oracle Database SID.')
         stringParam('DB_PORT', '1521', 'The target Oracle Database server port.')
-        booleanParam('IMPORT_REFERENCE_PROJECT', false, 'Uncheck this if you already have imported a reference project.')
-        stringParam('PROJECT_CLONE_SVN_URL', 'https://10.9.238.88:18080/svn/R12EBS/branches/DEVELOPMENT', 'The default value is from the Accenture Engineered Systems Lab and is accessible from vpn.accenture.com. The downloaded codes will be committed to the Private Svn repository.')
-        stringParam('PROJECT_CLONE_SVN_USER', 'admin', '')
     }
-    configure passwordParam('SCM_PASSWORD', 'Your private SVN server administrator password.', 'admin')
-    configure passwordParam('PROJECT_CLONE_SVN_PASSWORD', '', '')
 
     environmentVariables {
         env('WORKSPACE_NAME',workspaceFolderName)
