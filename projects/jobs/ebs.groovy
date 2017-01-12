@@ -39,7 +39,7 @@ def loadCartridgeJob = freeStyleJob(cartridgeManagementFolderName + "/Load_EBS_A
 loadCartridgeJob.with{
     parameters{
         stringParam('CARTRIDGE_CLONE_URL', 'ssh://git@newsource.accenture.com/adopebs/adop-b-framework-oracle-ebs-cartridge-211.git', 'The ADOP cartridge url that contains the groovy scripts to create the jenkins jobs. Add jenkins ssh key to your innersource account to clone this.')
-        stringParam('ENVIRONMENT', '','Your environment name. It is important that this name is also aligned with your SVN branch.')
+        stringParam('ENVIRONMENT', '','Your environment name. It is important that this name is also the Database SID.')
         stringParam('APP_SSH_USER', 'applmgr', 'The unix user that has access to your application server.')
         stringParam('APP_SERVER', '', 'The resolvable hostname or IP address of your application server.')
         stringParam('APPL_HOME', '', '  Oracle EBS application specific value. Consult with your Apps DBAs.')
